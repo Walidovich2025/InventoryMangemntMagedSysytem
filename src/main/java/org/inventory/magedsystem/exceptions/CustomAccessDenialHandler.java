@@ -31,7 +31,7 @@ public class CustomAccessDenialHandler implements AccessDeniedHandler {
                 .build();
 
         response.setContentType("application/json");
-        response.setStatus(HttpStatus.FORBIDDEN);
+//        response.setStatus(HttpStatus.FORBIDDEN);
 
 
 
