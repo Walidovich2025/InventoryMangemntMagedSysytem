@@ -1,5 +1,6 @@
 package org.inventory.magedsystem.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.inventory.magedsystem.dto.LoginRequest;
 import org.inventory.magedsystem.dto.RegisterRequest;
@@ -90,6 +91,7 @@ public class userServiceImpl implements UserService {
     }
 
     @Override
+
     public Response getAllUsers() {
 
         List<User>users=userRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
