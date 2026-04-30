@@ -29,20 +29,20 @@ public class Response {
     private long totalElements;
     //for output optional
 
-    private UserDto user;
-    private List<UserDto> users;
+    private UserDto userDto;
+    private List<UserDto> userDtos;
 
-    private SupplierDto supplier;
-    private List<SupplierDto> suppliers;
+    private SupplierDto supplierDto;
+    private List<SupplierDto> supplierDtos;
 
-    private CategoryDto category;
-    private List<CategoryDto> categories;
+    private CategoryDto categoryDto;
+    private List<CategoryDto> categoriesDTO;
 
-    private ProductDto product;
-    private List<ProductDto> products;
+    private ProductDto productDto;
+    private List<ProductDto> productDtos;
 
-    private TransactionDto transaction;
-    private List<TransactionDto> transactions;
+    private TransactionDto transactionDto;
+    private List<TransactionDto> transactionDtos;
 
     private LocalDateTime timestamp = LocalDateTime.now();
 }

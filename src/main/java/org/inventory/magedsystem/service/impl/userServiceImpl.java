@@ -25,6 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class userServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -83,7 +84,7 @@ public class userServiceImpl implements UserService {
         String email=authentication.getName();
         User user=userRepository.findByEmail(email)
                 .orElseThrow(()->new NotFoundException("user not found"));
-        user.setTransactions(null);
+        // DO NOT modify the entity directly as it triggers dirty checking updates
         return user;
 
 
@@ -95,37 +96,49 @@ public class userServiceImpl implements UserService {
     public Response getAllUsers() {
 
         List<User>users=userRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
-        List<UserDto>userDtos=modelMapper.map(users,
-                new TypeToken<List<UserDto>>(){}.getType());
+        List<UserDto> userDtos = users.stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .collect(java.util.stream.Collectors.toList());
 
-        userDtos.forEach(UserDto->UserDto.setTransactions(null));
+        userDtos.forEach(userDto->userDto.setTransactions(null));
 
         return Response.builder()
                 .status(200)
-                .users(userDtos)
+                .message("success")
+                .userDtos(userDtos)
                 .build();
     }
 
     @Override
-    public Response updateUser(Long id, UserDto userDto) {
+    public Response updateUser(Long id, UserDto userDto)  {
         User existinguser = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("user not found"));
-        if (userDto.getEmail() != null) {
+
+        if (userDto.getEmail() != null && !userDto.getEmail().trim().isEmpty()) {
+            if (!existinguser.getEmail().equals(userDto.getEmail())) {
+                userRepository.findByEmail(userDto.getEmail()).ifPresent(user -> {
+                    throw new InvalidCarednitalsException("Email already exists");
+                });
+            }
             existinguser.setEmail(userDto.getEmail());
         }
-        if (userDto.getName() != null) {
+        if (userDto.getName() != null && !userDto.getName().trim().isEmpty()) {
             existinguser.setName(userDto.getName());
         }
-        if (userDto.getPhonenumber() != null) {
+        if (userDto.getPhonenumber() != null && !userDto.getPhonenumber().trim().isEmpty()) {
             existinguser.setPhone_number(userDto.getPhonenumber());
         }
         if (userDto.getRole() != null) {
             existinguser.setRole(userDto.getRole());
         }
-        if (userDto.getPassword() != null) {
+        if (userDto.getPassword() != null && !userDto.getPassword().trim().isEmpty()) {
             existinguser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
-        userRepository.save(existinguser);
+        try {
+            userRepository.save(existinguser);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new InvalidCarednitalsException("Name or Email already exists in the system.");
+        }
         return Response.builder()
                 .status(200)
                 .message("user updated successfully")
@@ -153,8 +166,8 @@ public class userServiceImpl implements UserService {
         UserDto userDto1 = modelMapper.map(user, UserDto.class);
         userDto1.getTransactions().
                 forEach(transactionDto ->{
-                    transactionDto.setUserDto(null);
-                    transactionDto.setSupplierDto(null);
+                    transactionDto.setUser(null);
+                    transactionDto.setSupplier(null);
 
 
 
@@ -163,7 +176,7 @@ public class userServiceImpl implements UserService {
         return Response.builder()
                 .status(200)
                 .message("success")
-                .user(userDto1)
+                .userDto(userDto1)
                 .build();
 
 

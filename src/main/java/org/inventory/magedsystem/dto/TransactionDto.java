@@ -36,12 +36,12 @@ public class TransactionDto {
 
 
 
-    private UserDto userDto;
+    private UserDto user;
 
-    private  ProductDto productDto;
+    private  ProductDto product;
 
 
-    private  SupplierDto supplierDto;
+    private  SupplierDto supplier;
 
 
 }
