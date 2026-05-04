@@ -16,7 +16,7 @@ public class TransactionRequest {
     private Long productId;
 
     @Positive(message = "quantity is required")
-    private int quantity;
+    private Integer quantity;
     private Long supplierId;
     private String description;
 }

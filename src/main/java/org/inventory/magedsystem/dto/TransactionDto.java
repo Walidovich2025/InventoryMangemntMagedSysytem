@@ -24,7 +24,7 @@ public class TransactionDto {
 
 
    private Integer totalProducts;
-    private BigDecimal totalPrice;
+    private BigDecimal totalprices;
 
     private TransactionType transactionType;
 
